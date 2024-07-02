@@ -1,7 +1,13 @@
 git checkout main
 
 $html = (New-Object System.Net.WebClient).DownloadString('https://live.sysinternals.com/files/')
-$time = @{label = 'time'; expression = { [System.DateTimeOffset]::Parse($_.Trim().Split('     ')[0]) } }
+$time = @{label = 'time'; expression = {
+        if ($null -eq $global:archive_time) {
+            $global:archive_time = [System.DateTimeOffset]::Parse($_.Trim().Split('     ')[0])
+        }
+        $global:archive_time
+    }
+}
 $name = @{
     label      = 'name'
     expression = {
@@ -36,6 +42,7 @@ $infos = $html.Split('<br>')
 | Select-Object @{label = 'html'; Expression = { $_ } }, $time, $name
 | Select-Object html, time, name, $url, $file
 
+Write-Output $archive_time
 Write-Output $infos
 
 mkdir temp
@@ -69,7 +76,7 @@ $diff = git diff --name-only
 Write-Output $diff
 if (-not [string]::IsNullOrEmpty($diff)) {
     # commit meta file
-    $releaseTime = [System.DateTimeOffset]::UtcNow
+    $releaseTime = $archive_time
     foreach ($c in (git status -s )) {
         git add $c.Trim().Split(' ')[1]
     }
