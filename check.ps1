@@ -51,12 +51,12 @@ foreach ($info in $infos) {
 
     if (Test-Path "$($info.name).json") {
         $meta = Get-Content "$($info.name).json" | ConvertFrom-Json
-        if ($meta.time -ne $info.time.ToUnixTimeSeconds()) {
-            $meta.time = $info.time.ToUnixTimeSeconds()
-            $meta.hash = (Get-FileHash $info.file).Hash
-            $meta | ConvertTo-Json > "$($info.name).json"
-            continue
-        }
+        # if ($meta.time -ne $info.time.ToUnixTimeSeconds()) {
+        #     $meta.time = $info.time.ToUnixTimeSeconds()
+        #     $meta.hash = (Get-FileHash $info.file).Hash
+        #     $meta | ConvertTo-Json > "$($info.name).json"
+        #     continue
+        # }
         $hash = (Get-FileHash $info.file).Hash
         if ($meta.hash -ne $hash) {
             $meta.hash = $hash
@@ -65,31 +65,31 @@ foreach ($info in $infos) {
     else {
         $meta = @{
             hash = (Get-FileHash $info.file).Hash
-            time = $info.time.ToUnixTimeSeconds()
+            # time = $info.time.ToUnixTimeSeconds()
         }
         $meta | ConvertTo-Json > "$($info.name).json"
     }
 }
 
-$env:PAGER = ''
-$diff = git diff --name-only
-Write-Output $diff
-if (-not [string]::IsNullOrEmpty($diff)) {
-    # commit meta file
-    $releaseTime = $archive_time
-    foreach ($c in (git status -s )) {
-        git add $c.Trim().Split(' ')[1]
-    }
-    git commit -m "Auto update at $($releaseTime.ToString('u'))"
-    git push origin main
+# $env:PAGER = ''
+# $diff = git diff --name-only
+# Write-Output $diff
+# if (-not [string]::IsNullOrEmpty($diff)) {
+#     # commit meta file
+#     $releaseTime = $archive_time
+#     foreach ($c in (git status -s )) {
+#         git add $c.Trim().Split(' ')[1]
+#     }
+#     git commit -m "Auto update at $($releaseTime.ToString('u'))"
+#     git push origin main
 
-    # create tag and release
-    $TAG_NAME = $releaseTime.ToString('yyyyMMddHHmmss')
-    gh release create $TAG_NAME --generate-notes
-    foreach ($info in $infos) {
-        gh release upload $TAG_NAME $info.file
-    }
-}
-else {
-    Write-Output 'No upgrade.'
-}
+#     # create tag and release
+#     $TAG_NAME = $releaseTime.ToString('yyyyMMddHHmmss')
+#     gh release create $TAG_NAME --generate-notes
+#     foreach ($info in $infos) {
+#         gh release upload $TAG_NAME $info.file
+#     }
+# }
+# else {
+#     Write-Output 'No upgrade.'
+# }
