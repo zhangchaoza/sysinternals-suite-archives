@@ -60,6 +60,7 @@ foreach ($info in $infos) {
         $hash = (Get-FileHash $info.file).Hash
         if ($meta.hash -ne $hash) {
             $meta.hash = $hash
+            $meta | ConvertTo-Json > "$($info.name).json"
         }
     }
     else {
