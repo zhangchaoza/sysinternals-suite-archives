@@ -94,3 +94,7 @@ if (-not [string]::IsNullOrEmpty($diff)) {
 else {
     Write-Output 'No upgrade.'
 }
+
+Write-Output "$([System.DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds())" | Set-Content lastest_check_time.txt
+git add last_update_time.txt
+git commit -m 'update lastest check time'
