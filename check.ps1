@@ -45,7 +45,8 @@ $infos = $html.Split('<br>')
 Write-Output $archive_time
 Write-Output $infos
 
-mkdir temp -Force | Out-Null
+New-Item temp -ItemType Directory -Force | Out-Null
+
 foreach ($info in $infos) {
     Write-Output "download $($info.name) $($info.url)"
     wget -O $info.file $info.url
