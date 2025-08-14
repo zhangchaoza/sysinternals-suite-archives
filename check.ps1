@@ -11,7 +11,7 @@ $time = @{label = 'time'; expression = {
 $name = @{
     label      = 'name'
     expression = {
-        if ($_.Trim().Split('     ')[1] -match '(?<=>)[A-Za-z0-9.\-\+]+(?=<)') {
+        if ($_ -match '(?<=>)[A-Za-z0-9.\-\+]+(?=<)') {
             $Matches[0]
         }
         else {
@@ -45,8 +45,9 @@ $infos = $html.Split('<br>')
 Write-Output $archive_time
 Write-Output $infos
 
-mkdir temp
+mkdir temp -Force | Out-Null
 foreach ($info in $infos) {
+    Write-Output "download $($info.name) $($info.url)"
     wget -O $info.file $info.url
 
     if (Test-Path "$($info.name).json") {
@@ -58,6 +59,7 @@ foreach ($info in $infos) {
         #     continue
         # }
         $hash = (Get-FileHash $info.file).Hash
+        Write-Output "check $($info.name) hash $hash"
         if ($meta.hash -ne $hash) {
             $meta.hash = $hash
             $meta | ConvertTo-Json > "$($info.name).json"
