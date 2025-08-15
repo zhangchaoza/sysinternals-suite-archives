@@ -89,6 +89,7 @@ if (-not [string]::IsNullOrEmpty($diff)) {
 
     # create tag and release
     $TAG_NAME = $releaseTime.ToString('yyyyMMddHHmmss')
+    gh auth login -h $env:GITHUB_TOKEN
     gh release create $TAG_NAME --generate-notes
     foreach ($info in $infos) {
         gh release upload $TAG_NAME $info.file
