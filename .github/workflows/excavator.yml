@@ -21,7 +21,7 @@ jobs:
           git remote 'set-url' --push origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
       - name: Excavate check
         env:
-          GITHUB_TOKEN: ${{ secrets.YOUR_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
           ./check.ps1
