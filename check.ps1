@@ -87,9 +87,14 @@ if (-not [string]::IsNullOrEmpty($diff)) {
     git commit -m "Auto update at $($releaseTime.ToString('u'))"
     git push origin main
 
-    # create tag and release
-    $TAG_NAME = $releaseTime.ToString('yyyyMMddHHmmss')
+    # login github
+    Write-Output "login github"
     gh auth login -h $env:GITHUB_TOKEN
+    gh auth status
+
+    # create tag and release
+    Write-Output "create tag and release $TAG_NAME"
+    $TAG_NAME = $releaseTime.ToString('yyyyMMddHHmmss')
     gh release create $TAG_NAME --generate-notes
     foreach ($info in $infos) {
         gh release upload $TAG_NAME $info.file
